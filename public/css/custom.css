@@ -1,0 +1,161 @@
+/* グローバルスタイル */
+
+/* 全体の基本フォントサイズを設定（デフォルトより2ポイント小さくする） */
+body {
+    font-size: 14px; /* デフォルトが16pxの場合、2ポイント小さく */
+    line-height: 1.5;
+    color: #333; /* デフォルトのテキストカラー */
+    background-color: #f8f9fa; /* 背景色の設定 */
+    font-family: Arial, sans-serif; /* フォントファミリー */
+}
+
+/* 見出しのフォントサイズとマージンの調整 */
+h1, h2, h3, h4, h5, h6 {
+    font-size: calc(1em - 0.125em); /* それぞれの見出しを少し小さくする */
+    margin-bottom: 0.5em; /* 見出しの下部マージンを設定 */
+}
+
+/* サイドバーのスタイル */
+.sidebar {
+    width: 250px;
+    background-color: #006241; /* スターバックス風のダークグリーン */
+    color: #fff;
+    padding: 20px;
+    height: 100vh;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    position: fixed;
+}
+
+.nav-link {
+    display: block;
+    padding: 10px 0;
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+    transition: padding-left 0.3s;
+}
+
+.nav-link:hover {
+    background-color: #004a33; /* ホバー時の背景色 */
+    padding-left: 15px;
+}
+
+/* コンテンツエリア */
+.content {
+    padding: 20px;
+    width: calc(100% - 250px); /* サイドバーの幅を引いた残りの幅 */
+    margin-left: 250px; /* サイドバーの幅と一致 */
+    overflow-y: auto;
+    background-color: #fff;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* テーブルのスタイル */
+.table {
+    font-size: 14px; /* テーブル内のフォントサイズ */
+    background-color: #fff;
+    border-collapse: collapse; /* テーブルのセルの隙間をなくす */
+    width: 100%;
+    margin-bottom: 1em;
+}
+
+.table th, .table td {
+    padding: 0.5em; /* セル内のパディングを狭める */
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+}
+
+/* テーブルのタイトル行（th）の中央寄せ */
+.table th {
+    text-align: center; /* タイトル行を中央寄せ */
+    background-color: #f1f1f1; /* 背景色を薄いグレーに */
+    font-weight: bold;
+}
+
+/* ボタンのスタイル */
+.btn {
+    font-size: 14px;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.25rem;
+    transition: background-color 0.2s ease;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.btn-warning:hover {
+    background-color: #e0a800;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+/* ページネーションのスタイル */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 1em;
+    font-size: 14px;
+}
+
+.pagination .page-item .page-link {
+    color: #006241;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #006241;
+    border-color: #006241;
+    color: #fff;
+}
+
+.pagination .page-item .page-link:hover {
+    background-color: #004a33;
+    color: #fff;
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+    .content {
+        width: 100%;
+        margin-left: 0;
+    }
+    .nav-link {
+        padding: 0.5em 1em;
+    }
+}
+
+.nav-link {
+    display: block;
+    padding: 10px 0;
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+    transition: padding-left 0.3s;
+}
+
+.nav-link:hover {
+    background-color: #004a33; /* ホバー時の背景色 */
+    padding-left: 15px;
+}
+
+/* 現在のページを示すためのスタイル（スタバ風に調整） */
+.nav-link.active {
+    background-color: #c0d6c3; /* スターバックス風の淡い緑 */
+    color: #006241; /* スタバのダークグリーン */
+    font-weight: bold; /* 強調表示 */
+    padding-left: 15px; /* 追加のパディング */
+    border-left: 4px solid #006241; /* ダークグリーンの左ボーダーでさらに目立たせる */
+}

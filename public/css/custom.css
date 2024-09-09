@@ -2,23 +2,30 @@
 
 /* 全体の基本フォントサイズを設定（デフォルトより2ポイント小さくする） */
 body {
-    font-size: 14px; /* デフォルトが16pxの場合、2ポイント小さく */
+    font-size: 14px;
     line-height: 1.5;
-    color: #333; /* デフォルトのテキストカラー */
-    background-color: #f8f9fa; /* 背景色の設定 */
-    font-family: Arial, sans-serif; /* フォントファミリー */
+    color: #333;
+    background-color: #f8f9fa;
+    font-family: Arial, sans-serif;
 }
 
 /* 見出しのフォントサイズとマージンの調整 */
 h1, h2, h3, h4, h5, h6 {
-    font-size: calc(1em - 0.125em); /* それぞれの見出しを少し小さくする */
-    margin-bottom: 0.5em; /* 見出しの下部マージンを設定 */
+    font-size: calc(1em - 0.125em);
+    margin-bottom: 0.5em;
+}
+
+.news-management-title {
+    font-size: 24px;
+    font-weight: bold;
+    text-decoration: underline;
+    margin-bottom: 1em;
 }
 
 /* サイドバーのスタイル */
 .sidebar {
     width: 250px;
-    background-color: #006241; /* スターバックス風のダークグリーン */
+    background-color: #006241;
     color: #fff;
     padding: 20px;
     height: 100vh;
@@ -36,15 +43,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .nav-link:hover {
-    background-color: #004a33; /* ホバー時の背景色 */
+    background-color: #004a33;
     padding-left: 15px;
 }
 
-/* コンテンツエリア */
 .content {
     padding: 20px;
-    width: calc(100% - 250px); /* サイドバーの幅を引いた残りの幅 */
-    margin-left: 250px; /* サイドバーの幅と一致 */
+    width: calc(100% - 250px);
+    margin-left: 250px;
     overflow-y: auto;
     background-color: #fff;
     box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
@@ -52,110 +58,86 @@ h1, h2, h3, h4, h5, h6 {
 
 /* テーブルのスタイル */
 .table {
-    font-size: 14px; /* テーブル内のフォントサイズ */
+    font-size: 14px;
     background-color: #fff;
-    border-collapse: collapse; /* テーブルのセルの隙間をなくす */
+    border-collapse: collapse;
     width: 100%;
     margin-bottom: 1em;
 }
 
 .table th, .table td {
-    padding: 0.5em; /* セル内のパディングを狭める */
+    padding: 0.5em;
     text-align: left;
     border-bottom: 1px solid #dee2e6;
 }
 
-/* テーブルのタイトル行（th）の中央寄せ */
 .table th {
-    text-align: center; /* タイトル行を中央寄せ */
-    background-color: #f1f1f1; /* 背景色を薄いグレーに */
+    text-align: center;
+    background-color: #f1f1f1;
     font-weight: bold;
 }
 
-/* ボタンのスタイル */
-.btn {
+/* テーブルのレコードの縦幅を狭くする */
+.table-sm tbody tr {
+    height: 30px;
+    padding: 0;
+}
+
+/* テーブルのセル内の余白を削減する */
+.table-sm td, .table-sm th {
+    padding: 0.20rem;
+}
+
+/* タスクタイムラインのスタイル */
+.table-timeline {
     font-size: 14px;
-    padding: 0.375rem 0.75rem;
-    border-radius: 0.25rem;
-    transition: background-color 0.2s ease;
+    margin-bottom: 1em;
 }
 
-.btn-warning {
-    background-color: #ffc107;
-    color: #212529;
+.table-timeline th, .table-timeline td {
+    padding: 0.5em;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
 }
 
-.btn-warning:hover {
-    background-color: #e0a800;
+.table-timeline th {
+    text-align: center;
+    background-color: #f1f1f1;
+    font-weight: bold;
 }
 
-.btn-danger {
-    background-color: #dc3545;
-    color: #fff;
+/* 列幅調整 */
+.table-timeline th.status, .table-timeline td.status {
+    width: 80px;
 }
 
-.btn-danger:hover {
-    background-color: #c82333;
+.table-timeline th.task-name, .table-timeline td.task-name {
+    width: 70px;
 }
 
-/* ページネーションのスタイル */
-.pagination {
-    display: flex;
-    justify-content: center;
-    margin-top: 1em;
-    font-size: 14px;
+.table-timeline th.start-time, .table-timeline td.start-time {
+    width: 90px;
 }
 
-.pagination .page-item .page-link {
-    color: #006241;
+.table-timeline th.duration, .table-timeline td.duration {
+    width: 90px;
 }
 
-.pagination .page-item.active .page-link {
-    background-color: #006241;
-    border-color: #006241;
-    color: #fff;
+.table-timeline th.record-count, .table-timeline td.record-count {
+    width: 80px;
 }
 
-.pagination .page-item .page-link:hover {
-    background-color: #004a33;
-    color: #fff;
+.table-timeline th.error-message, .table-timeline td.error-message {
+    width: 350px;
 }
 
-/* モバイル対応 */
-@media (max-width: 768px) {
-    .sidebar {
-        width: 100%;
-        height: auto;
-        position: relative;
-    }
-    .content {
-        width: 100%;
-        margin-left: 0;
-    }
-    .nav-link {
-        padding: 0.5em 1em;
-    }
+/* レコードをハイライトするクラス */
+.highlight-row {
+    background-color: #ffff90; /* ハイライト色 */
+    color: #fd1e00; /* 赤っぽい文字色 */
 }
 
-.nav-link {
-    display: block;
-    padding: 10px 0;
-    color: #fff;
-    text-decoration: none;
-    font-size: 14px;
-    transition: padding-left 0.3s;
-}
-
-.nav-link:hover {
-    background-color: #004a33; /* ホバー時の背景色 */
-    padding-left: 15px;
-}
-
-/* 現在のページを示すためのスタイル（スタバ風に調整） */
-.nav-link.active {
-    background-color: #c0d6c3; /* スターバックス風の淡い緑 */
-    color: #006241; /* スタバのダークグリーン */
-    font-weight: bold; /* 強調表示 */
-    padding-left: 15px; /* 追加のパディング */
-    border-left: 4px solid #006241; /* ダークグリーンの左ボーダーでさらに目立たせる */
+/* 中央寄せを適用 */
+.text-center {
+    text-align: center;
 }

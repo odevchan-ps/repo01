@@ -10,6 +10,7 @@ use App\Http\Controllers\XPromptController;
 use App\Http\Controllers\XGeneratedPostController;
 use App\Http\Controllers\XReplyController;
 use App\Http\Controllers\XFeedbackController;
+use App\Http\Controllers\NewsImportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,7 +33,6 @@ use App\Http\Controllers\XFeedbackController;
 Route::get('/', [NewsArticlesController::class, 'index'])->name('home');
 
 Route::resource('news_articles', NewsArticleController::class);
-Route::get('/news-management', [NewsArticlesController::class, 'index'])->name('news_articles.management');
 Route::resource('x_posts', XPostController::class);
 Route::resource('x_vectors', XVectorController::class);
 Route::resource('x_prompts', XPromptController::class);
@@ -40,3 +40,6 @@ Route::resource('x_generated_posts', XGeneratedPostController::class);
 Route::resource('x_replies', XReplyController::class);
 Route::resource('x_feedbacks', XFeedbackController::class);
 Route::resource('code_list', CodeListController::class);
+
+Route::get('/news-management', [NewsArticlesController::class, 'index'])->name('news_articles.management');
+Route::post('/news-management/import', [NewsArticlesController::class, 'importNews'])->name('news.import');

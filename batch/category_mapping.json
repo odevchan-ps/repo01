@@ -1,0 +1,9 @@
+{
+  "society"      : "01",
+  "politics"     : "01",
+  "economy"      : "01",
+  "entertainment": "02",
+  "international": "05",
+  "sports"       : "03",
+  "science"      : "04"
+}

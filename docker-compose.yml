@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    container_name: laravel_app
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html/public
+
+  db:
+    image: mysql:8.0
+    container_name: laravel_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: laravel_db
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: laravelpass
+      TZ: Asia/Tokyo
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./mysql_data:/var/lib/mysql
+      - /etc/localtime:/etc/localtime:ro
+
+
+  batch:
+    build:
+      context: ./batch
+      dockerfile: Dockerfile
+    container_name: python_batch
+    restart: always
+    env_file:
+      - ./batch/.env
+    depends_on:
+      - db
+    environment:
+      TZ: Asia/Tokyo
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+
+volumes:
+  db_data:
+

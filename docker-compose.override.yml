@@ -1,0 +1,12 @@
+# docker-compose.override.yml
+version: '3'
+
+services:
+  batch:
+    command: ["tail", "-f", "/dev/null"]
+    # ホストの batch/ をコンテナの /app にマウント
+    volumes:
+      - ./batch:/app
+  db:
+    volumes:
+      - ./mysql-client.cnf:/etc/mysql/conf.d/mysql-client.cnf:ro

@@ -48,10 +48,8 @@ jobs:
       - name: Build & push batch image
         uses: docker/build-push-action@v4
         with:
-          # コンテキストをルートにして…
-          context: .
-          # Dockerfile のパスを batch/Dockerfile に指定
-          file: batch/Dockerfile
+          context: batch
+          file: Dockerfile
           platforms: linux/amd64,linux/arm/v7
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/repo01-batch:latest

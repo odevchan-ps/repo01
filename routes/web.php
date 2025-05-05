@@ -33,6 +33,10 @@ Route::get('/', [NewsArticlesController::class, 'index'])->name('home');
 
 Route::resource('news_articles', NewsArticleController::class);
 Route::get('/news-management', [NewsArticlesController::class, 'index'])->name('news_articles.management');
+Route::get(
+        '/news-management/{news_article}',
+        [NewsArticlesController::class, 'show']
+    )->name('news_articles.show');
 Route::resource('x_posts', XPostController::class);
 Route::resource('x_vectors', XVectorController::class);
 Route::resource('x_prompts', XPromptController::class);

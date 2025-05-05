@@ -2,6 +2,7 @@
 
 import os
 import sys
+import argparse
 import time
 import logging
 
@@ -14,6 +15,9 @@ from db_helper         import (
     mark_article_as_processed,
     insert_generated_post,
 )
+from datetime import datetime, timedelta
+import random
+import os
 
 def setup_logger():
     script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -28,7 +32,7 @@ def setup_logger():
     logger.addHandler(fh)
     return logger
 
-def main():
+def main(auto_confirm=False):
     start_total = time.time()
     logger = setup_logger()
 
@@ -66,16 +70,53 @@ def main():
     print(f"[ステップ1 結果] 登録成功={inserted}件, スキップ={skipped}件, エラー={errors1}件 "
           f"(所要時間: {step1_duration:.2f}s)\n")
 
-    # 続行確認
-    answer = input("ステップ2以降を実行しますか？ (y/n): ").strip().lower()
+    # 続行確認（--yes なら自動で y 扱い）
+    if auto_confirm:
+        answer = 'y'
+    else:
+        answer = input("ステップ2以降を実行しますか？ (y/n): ").strip().lower()
     if answer != 'y':
         print("処理を中断します。")
         sys.exit(0)
 
     # ─── ステップ2: プロンプト作成 & 投稿文生成 ─────────────
-    articles = fetch_unprocessed_articles()
+    # 環境変数から直近ウィンドウ(時間)と上限を取得（デフォルトは5時間以内, 3件）
+    window_hours    = int(os.getenv("STEP2_WINDOW_HOURS", 5))
+    max_articles    = int(os.getenv("STEP2_MAX_ARTICLES", 3))
+
+    # 全未処理記事を取得し、published_at フィールドで絞り込み
+    all_articles = fetch_unprocessed_articles()
+    now = datetime.now()
+    window_start = now - timedelta(hours=window_hours)
+
+    # published_at フィールドを datetime に変換して、直近ウィンドウ内のみ抽出
+    recent = []
+    for a in all_articles:
+        # published_at が datetime オブジェクトか文字列かを判定
+        raw = a['published_at']
+        if isinstance(raw, datetime):
+            published = raw
+        else:
+            # 文字列の日付形式が YYYY-MM-DD HH:MM:SS か YYYY/MM/DD H:MM:SS の
+            # どちらかを受け付ける
+            try:
+                published = datetime.strptime(raw, "%Y-%m-%d %H:%M:%S")
+            except ValueError:
+                published = datetime.strptime(raw, "%Y/%m/%d %H:%M:%S")
+        # ウィンドウ内なら対象に追加
+        if published >= window_start:
+            recent.append(a)
+
+    # 候補をランダムにシャッフル（または sample）して上限数だけ選択
+    if len(recent) > max_articles:
+        # random.sample で重複なくランダムに max_articles 件取得
+        articles = random.sample(recent, max_articles)
+    else:
+        articles = recent
+
     total2 = len(articles)
-    print(f"[ステップ2] 未処理記事取得：{total2}件 処理開始")
+    print(f"[ステップ2] 直近{window_hours}時間以内の記事からランダムに最大{max_articles}件を抽出：{total2}件 処理開始")
+
     step2_start = time.time()
 
     prompt_created = prompt_errors = post_generated = post_errors = 0
@@ -122,4 +163,8 @@ def main():
     print(f"=== main_batch 終了 (総処理時間: {total_duration:.2f}s) ===")
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="NHK RSS→X自動投稿バッチ")
+    parser.add_argument('-y','--yes', action='store_true',
+                        help="ステップ2の確認プロンプトを自動で y 扱い（スキップ）")
+    args = parser.parse_args()
+    main(auto_confirm=args.yes)

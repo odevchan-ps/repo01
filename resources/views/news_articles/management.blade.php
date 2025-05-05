@@ -21,7 +21,8 @@
         </thead>
         <tbody>
             @foreach($newsArticles as $article)
-            <tr>
+            <tr class="clickable-row"
+                data-href="{{ route('news_articles.show', $article->article_id) }}">
                 <td>{{ $article->created_at }}</td>
                 <td>{{ $sourceMapping[$article->site_cd] ?? '' }}</td>
                 <td>{{ $categoryMapping[$article->news_category_cd] ?? '' }}</td>
@@ -38,6 +39,19 @@
             @endforeach
         </tbody>
     </table>
+
+    @push('scripts')
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.clickable-row').forEach(function(row) {
+        row.style.cursor = 'pointer';
+        row.addEventListener('click', function() {
+        window.location.href = row.dataset.href;
+        });
+    });
+    });
+    </script>
+    @endpush
 
     <!-- パーシャルビューをインクルード（下部） -->
     @include('components.pagination', ['items' => $newsArticles, 'createRoute' => route('news_articles.create')])

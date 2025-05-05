@@ -71,5 +71,7 @@
 
     <!-- Bootstrap JS (Optional) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    {{-- 子ビューで @push('scripts') したスクリプトをここで出力 --}}
+    @stack('scripts')
 </body>
 </html>

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\XPrompt;
 
 class NewsArticle extends Model
 {
@@ -34,4 +36,15 @@ class NewsArticle extends Model
         'source_id',
         'collection_method_cd'
     ];
+    /**
+     * リレーション：プロンプト (x_prompts テーブル)
+     */
+    public function prompt(): BelongsTo
+    {
+        return $this->belongsTo(
+            XPrompt::class,
+            'prompt_id',    // NewsArticle 側の FK カラム
+            'prompt_id'     // XPrompt モデルの PK
+        );
+    }
 }

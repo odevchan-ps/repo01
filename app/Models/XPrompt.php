@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\XGeneratedPost;
 
 class XPrompt extends Model
 {
@@ -26,5 +28,16 @@ class XPrompt extends Model
         'prompt_text',
         'created_at'
     ];
-
+    
+    /**
+     * リレーション：生成ポスト (x_generated_posts テーブル)
+     */
+    public function generatedPosts(): HasMany
+    {
+        return $this->hasMany(
+            XGeneratedPost::class,
+            'prompt_id',    // XGeneratedPost 側の FK
+            'prompt_id'     // XPrompt の PK
+        );
+    }
 }

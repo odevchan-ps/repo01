@@ -3,7 +3,7 @@ name: Build & Publish Multi-Arch Images
 # main ブランチに push / PR マージ時に実行
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
 
 permissions:
   contents: read           # ソースコードの読み取り

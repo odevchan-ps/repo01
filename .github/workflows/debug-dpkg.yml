@@ -13,4 +13,4 @@ jobs:
 
       - name: Build batch image in plain mode
         run: |
-          docker build --progress=plain --platform=linux/amd64 -f batch/Dockerfile batch
+          docker build --progress=plain --platform=linux/arm/v7 -f batch/Dockerfile batch

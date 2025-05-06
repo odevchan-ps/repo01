@@ -22,8 +22,3 @@ jobs:
             --platform=linux/arm/v7 \
             -f batch/Dockerfile \
             batch | tee build.log
-
-      - uses: actions/upload-artifact@v3
-        with:
-          name: build-log
-          path: build.log

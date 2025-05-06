@@ -1,0 +1,25 @@
+# .github/workflows/debug-dpkg.yml （名前は何でも可・push 時だけ実行）
+name: debug dpkg
+on:
+  workflow_dispatch:
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build batch image (debug mode, show full dpkg log)
+        run: |
+          docker build \
+            --progress=plain \
+            --platform=linux/amd64 \
+            -f batch/Dockerfile \
+            --build-arg BUILDKIT_INLINE_CACHE=0 \
+            . | tee build.log
+
+      - name: Upload log artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-log
+          path: build.log

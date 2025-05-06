@@ -2,9 +2,6 @@ services:
   app:
     image: ghcr.io/odevchan-ps/repo01-app:latest
     platform: linux/arm/v7
-    build:
-      context: .
-      dockerfile: Dockerfile.app
     container_name: laravel_app
     volumes:
       - ./:/var/www/html
@@ -35,9 +32,6 @@ services:
   batch:
     image: ghcr.io/odevchan-ps/repo01-batch:latest
     platform: linux/arm/v7
-    build:
-      context: ./batch
-      dockerfile: Dockerfile
     container_name: python_batch
     restart: always
     env_file:

@@ -12,7 +12,7 @@ services:
       - APACHE_DOCUMENT_ROOT=/var/www/html/public
 
   db:
-    image: arm32v7/mariadb:10.3
+    image: linuxserver/mariadb:latest 
     container_name: laravel_db
     restart: always
     environment:

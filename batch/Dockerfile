@@ -1,9 +1,8 @@
 # syntax=docker/dockerfile:1.4
 FROM python:3.11-slim
 
-# apt キャッシュをマウントして高速化
-RUN --mount=type=cache,target=/var/cache/apt \
-    --mount=type=cache,target=/var/lib/apt/lists \
+# apt アーカイブ領域のみキャッシュマウント
+RUN --mount=type=cache,target=/var/cache/apt/archives \
     apt-get update && \
     apt-get install -y --no-install-recommends \
       build-essential python3-dev libxml2-dev libxslt1-dev cron && \

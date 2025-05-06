@@ -1,3 +1,5 @@
+version: '3.9'
+
 services:
   app:
     image: ghcr.io/odevchan-ps/repo01-app:latest
@@ -22,6 +24,11 @@ services:
       MYSQL_USER: laravel
       MYSQL_PASSWORD: laravelpass
       TZ: Asia/Tokyo
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout:  3s
+      retries:  10
     ports:
       - "3306:3306"
     volumes:
@@ -36,7 +43,8 @@ services:
     env_file:
       - ./batch/.env
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       TZ: Asia/Tokyo
     volumes:

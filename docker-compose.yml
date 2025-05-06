@@ -1,7 +1,7 @@
 services:
   app:
     image: ghcr.io/odevchan-ps/repo01-app:latest
-
+    platform: linux/arm/v7
     build:
       context: .
       dockerfile: Dockerfile.app
@@ -34,7 +34,7 @@ services:
 
   batch:
     image: ghcr.io/odevchan-ps/repo01-batch:latest
-
+    platform: linux/arm/v7
     build:
       context: ./batch
       dockerfile: Dockerfile

@@ -3,7 +3,7 @@ name: debug dpkg
 on: workflow_dispatch
 
 permissions:
-  contents: read   # ← checkout 用に必須
+  contents: read
 
 jobs:
   debug:
@@ -17,9 +17,4 @@ jobs:
             --progress=plain \
             --platform=linux/amd64 \
             -f batch/Dockerfile \
-            . | tee build.log
-
-      - uses: actions/upload-artifact@v3
-        with:
-          name: build-log
-          path: build.log
+            .

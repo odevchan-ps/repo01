@@ -1,5 +1,7 @@
 services:
   app:
+    image: ghcr.io/odevchan-ps/repo01-app:latest
+
     build:
       context: .
       dockerfile: Dockerfile.app
@@ -14,7 +16,7 @@ services:
       - APACHE_DOCUMENT_ROOT=/var/www/html/public
 
   db:
-    image: mysql:8.0
+    image: mariadb:10.3
     container_name: laravel_db
     restart: always
     environment:
@@ -30,8 +32,9 @@ services:
       - ./mysql_data:/var/lib/mysql
       - /etc/localtime:/etc/localtime:ro
 
-
   batch:
+    image: ghcr.io/odevchan-ps/repo01-batch:latest
+
     build:
       context: ./batch
       dockerfile: Dockerfile

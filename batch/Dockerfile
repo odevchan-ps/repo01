@@ -1,15 +1,15 @@
 # syntax=docker/dockerfile:1.4
-FROM python:3.11-slim
 
-# 1) 対話プロンプトを完全に抑制
+FROM python:3.11-slim
 ENV DEBIAN_FRONTEND=noninteractive
 
+ARG TARGETARCH            # ★ 追記：BuildKit が自動で渡す
 WORKDIR /app
 
-# 2) apt 更新とインストールを分割＆dpkg オプションを追加
-RUN --mount=type=cache,id=apt-archives,target=/var/cache/apt/archives \
+# アーカイブ用キャッシュをアーキ別に
+RUN --mount=type=cache,id=apt-${TARGETARCH},target=/var/cache/apt/archives \
     apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    apt-get install -y --no-install-recommends \
       apt-utils \
       build-essential python3-dev libxml2-dev libxslt1-dev cron \
       -o Dpkg::Options::="--force-confdef" \
@@ -17,9 +17,9 @@ RUN --mount=type=cache,id=apt-archives,target=/var/cache/apt/archives \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# 3) pip wheel のキャッシュマウント（lxml ビルド結果を永続化）
+# 3) pip wheel キャッシュもアーキ別に
 COPY requirements.txt .
-RUN --mount=type=cache,id=pip-cache,target=/root/.cache/pip \
+RUN --mount=type=cache,id=pip-${TARGETARCH},target=/root/.cache/pip \
     pip install --no-cache-dir -r requirements.txt
 
 # 4) アプリ本体と crontab

@@ -13,15 +13,17 @@ services:
       - APACHE_DOCUMENT_ROOT=/var/www/html/public
 
   db:
-    image: mysql:8.0
+    image: linuxserver/mariadb:arm32v7-latest
     container_name: laravel_db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: laravel_db
-      MYSQL_USER: laravel
-      MYSQL_PASSWORD: laravelpass
-      TZ: Asia/Tokyo
+      - PUID=1000
+      - PGID=1000
+      - MARIADB_ROOT_PASSWORD=rootpass
+      - MARIADB_DATABASE=laravel_db
+      - MARIADB_USER=laravel
+      - MARIADB_PASSWORD=laravelpass
+      - TZ=Asia/Tokyo
     ports:
       - "3306:3306"
     volumes:

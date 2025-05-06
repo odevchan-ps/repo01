@@ -1,24 +1,26 @@
 # syntax=docker/dockerfile:1.4
 FROM python:3.11-slim
 
-# 1) 非対話モードで dpkg を動かす
+# 対話プロンプトを完全に抑制
 ENV DEBIAN_FRONTEND=noninteractive
-
-# 2) apt キャッシュ（.deb アーカイブ）だけマウントして高速化
-RUN --mount=type=cache,target=/var/cache/apt/archives \
-    apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-      build-essential python3-dev libxml2-dev libxslt1-dev cron && \
-    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# 3) pip キャッシュマウントで wheel ビルド結果を保存
+# ① apt-utils を先に入れて、debconf 関連エラーをなくす
+# ② アーカイブキャッシュのみマウント
+RUN --mount=type=cache,id=apt-archives,target=/var/cache/apt/archives \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+      apt-utils \
+      build-essential python3-dev libxml2-dev libxslt1-dev cron && \
+    rm -rf /var/lib/apt/lists/*
+
+# ③ requirements.txt を先にコピーして pip キャッシュマウント
 COPY requirements.txt .
-RUN --mount=type=cache,target=/root/.cache/pip \
+RUN --mount=type=cache,id=pip-cache,target=/root/.cache/pip \
     pip install --no-cache-dir -r requirements.txt
 
-# 4) アプリ本体と crontab セットアップ
+# ④ アプリ本体と crontab
 COPY . .
 COPY crontab /etc/cron.d/my-cron
 RUN chmod 0644 /etc/cron.d/my-cron \

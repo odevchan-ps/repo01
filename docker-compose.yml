@@ -25,7 +25,7 @@ services:
       MYSQL_PASSWORD: laravelpass
       TZ: Asia/Tokyo
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD"]
       interval: 5s
       timeout:  3s
       retries:  10

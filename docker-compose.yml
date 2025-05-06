@@ -1,7 +1,7 @@
 services:
   app:
     image: ghcr.io/odevchan-ps/repo01-app:latest
-    platform: linux/arm/v7
+    platform: linux/arm
     container_name: laravel_app
     volumes:
       - ./:/var/www/html
@@ -31,7 +31,7 @@ services:
 
   batch:
     image: ghcr.io/odevchan-ps/repo01-batch:latest
-    platform: linux/arm/v7
+    platform: linux/arm
     container_name: python_batch
     restart: always
     env_file:

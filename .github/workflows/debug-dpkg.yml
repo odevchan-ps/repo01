@@ -1,16 +1,24 @@
-# .github/workflows/debug-dpkg.yml
-name: debug dpkg
-on: workflow_dispatch
-
-permissions:
-  contents: read
-
 jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build batch image in plain mode
+      # ★ QEMU を登録
+      - uses: docker/setup-qemu-action@v3
+
+      # ★ Buildx をセット（buildx bake と同じ）
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build batch image (arm/v7, plain log)
         run: |
-          docker build --progress=plain --platform=linux/arm/v7 -f batch/Dockerfile batch
+          docker buildx build \
+            --progress=plain \
+            --platform=linux/arm/v7 \
+            -f batch/Dockerfile \
+            batch | tee build.log
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build-log
+          path: build.log

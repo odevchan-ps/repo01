@@ -1,11 +1,10 @@
-version: '3.9'
-
 services:
   app:
     image: ghcr.io/odevchan-ps/repo01-app:latest
     container_name: laravel_app
     volumes:
-      - ./:/var/www/html
+      - ./:/var/www/html:cached
+      - /var/www/html/vendor
     ports:
       - "8080:80"
     depends_on:
@@ -14,21 +13,17 @@ services:
       - APACHE_DOCUMENT_ROOT=/var/www/html/public
 
   db:
-    image: mysql:8.0
-    platform: linux/amd64
+    image: linuxserver/mariadb:arm32v7-alpine-10.5.16-r0-ls63
     container_name: laravel_db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: laravel_db
-      MYSQL_USER: laravel
-      MYSQL_PASSWORD: laravelpass
-      TZ: Asia/Tokyo
-    healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$${MYSQL_ROOT_PASSWORD}"]
-      interval: 5s
-      timeout:  3s
-      retries:  10
+      - PUID=1000
+      - PGID=1000
+      - MYSQL_ROOT_PASSWORD=rootpass
+      - MYSQL_DATABASE=laravel_db
+      - MYSQL_USER=laravel
+      - MYSQL_PASSWORD=laravelpass
+      - TZ=Asia/Tokyo
     ports:
       - "3306:3306"
     volumes:
@@ -43,8 +38,7 @@ services:
     env_file:
       - ./batch/.env
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     environment:
       TZ: Asia/Tokyo
     volumes:
@@ -52,4 +46,3 @@ services:
 
 volumes:
   db_data:
-

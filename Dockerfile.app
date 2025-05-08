@@ -21,8 +21,19 @@ RUN apt-get update \
 # ── Composer 依存をバイナリ化 ───────────────────────────────────────
 # ※composer.json / composer.lock がある場合のみ
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist \
+RUN composer install \
+    --no-dev \
+    --optimize-autoloader \
+    --no-interaction \
+    --prefer-dist \
+    --no-scripts \
  && rm -rf ~/.composer
+
+# ── アプリケーション本体をコピー ─────────────────────────────────────
+COPY . .
+
+# ── ポストインストールスクリプトを手動実行 ─────────────────────────────
+RUN php artisan package:discover --ansi
 
 # Composer が必要ならインストール（省略可）
 # RUN curl -sS https://getcomposer.org/installer | php \

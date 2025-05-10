@@ -1,0 +1,22 @@
+services:
+  batch:
+    command: ["tail", "-f", "/dev/null"]
+    volumes:
+      - ./batch:/app
+
+  db:
+   image: mariadb:10.5               # x86_64 ネイティブ版イメージ
+   platform: linux/amd64             # 念のため明示的にamd64を指定
+   container_name: laravel_db        # 本番と同じコンテナ名
+   restart: always
+   environment:
+     - PUID=1000
+     - PGID=1000
+     - MYSQL_ROOT_PASSWORD=rootpass
+     - MYSQL_DATABASE=laravel_db
+     - MYSQL_USER=laravel
+     - MYSQL_PASSWORD=laravelpass
+     - TZ=Asia/Tokyo
+   volumes:
+     - db_data:/var/lib/mysql        # named volume のみ
+     - ./mysql-client.cnf:/etc/mysql/conf.d/mysql-client.cnf:ro

@@ -2,6 +2,7 @@ name: Build & Publish Multi-Arch Images
 
 # main ブランチに push / PR マージ時に実行
 on:
+  workflow_dispatch:    # ← 手動起動用トリガーを追加
   push:
     branches: [ master ]
 

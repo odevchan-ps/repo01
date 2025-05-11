@@ -19,3 +19,5 @@ yarn-error.log
 /.vscode
 batch/.env
 mysql_data/
+batch/logs/*.log
+docker-compose.override.yml.bak

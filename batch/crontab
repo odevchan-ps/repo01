@@ -1,1 +1,0 @@
-*/50 * * * * /usr/local/bin/python /app/main_batch.py >> /var/log/cron.log 2>&1

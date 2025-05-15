@@ -73,6 +73,75 @@ def insert_news_article(news) -> bool:
     conn.close()
     return True
 
+def get_latest_published(conn):
+    with conn.cursor() as cur:
+        cur.execute("SELECT MAX(published_at) FROM news_articles")
+        return cur.fetchone()[0]
+
+def bulk_insert_news_articles(conn, news_list):
+    sql = """
+      INSERT IGNORE INTO news_articles
+        (title, url, summary, news_category_cd, published_at)
+      VALUES (%s,%s,%s,%s,%s)
+    """
+    params = [
+        (n['title'], n['url'], n['summary'],
+         n['news_category_cd'], n['published_at'])
+        for n in news_list
+    ]
+    with conn:
+        with conn.cursor() as cur:
+            cur.executemany(sql, params)
+            return cur.rowcount
+
+
+def bulk_insert_news_articles_full(news_list):
+    """
+    news_articles に複数レコードを一括 INSERT 。
+    site_cd, title, url, summary, published_at,
+    news_category_cd, created_at, source_id, collection_method_cd
+    全フィールドを IGNORE 付きで投入します。
+    """
+    from datetime import datetime
+    conn = connect_db()
+    cursor = conn.cursor()
+
+    sql = """
+      INSERT IGNORE INTO news_articles
+        (site_cd,
+         title,
+         url,
+         summary,
+         published_at,
+         news_category_cd,
+         created_at,
+         source_id,
+         collection_method_cd)
+      VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+    """
+
+    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    params = [
+        (
+            n['site_cd'],
+            n['title'],
+            n['url'],
+            n['summary'],
+            n['published_at'],
+            n['news_category_cd'],
+            now,
+            n['source_id'],
+            n['collection_method_cd'],
+        )
+        for n in news_list
+    ]
+
+    cursor.executemany(sql, params)
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+
 def fetch_unprocessed_articles():
     conn = connect_db()
     cursor = conn.cursor(dictionary=True)

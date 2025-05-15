@@ -39,9 +39,33 @@ services:
     depends_on:
       - db
     environment:
-      TZ: Asia/Tokyo
+      - TZ=Asia/Tokyo
+      - LOG_DIR=/var/log/news-batch
     volumes:
       - /etc/localtime:/etc/localtime:ro
+      - ./batch/logs:/var/log/news-batch
+      - ./batch:/app
+
+  linechat:
+    image: ghcr.io/odevchan-ps/repo01-linechat:latest
+    container_name: python_linechat
+    restart: always
+    env_file:
+      - ./batch/linechat/env
+    environment:
+      - TZ=Asia/Tokyo
+    ports:
+      - "5000:5000"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: repo01_tunnel
+    restart: always
+    command: tunnel --url http://linechat:5000
+    depends_on:
+      - linechat
 
 volumes:
   db_data:

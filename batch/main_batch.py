@@ -9,6 +9,8 @@ import logging
 from fetch_news        import fetch_latest_news
 from prompt_generation import generate_prompt, generate_post_text
 from db_helper         import (
+    connect_db,
+    bulk_insert_news_articles_full,
     insert_news_article,
     fetch_unprocessed_articles,
     insert_prompt,
@@ -16,20 +18,27 @@ from db_helper         import (
     insert_generated_post,
 )
 from datetime import datetime, timedelta
+from logging.handlers import RotatingFileHandler
+from datetime import datetime as _dt
 import random
 import os
 
 def setup_logger():
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    log_dir    = os.path.join(script_dir, 'logs')
+    # ① 環境変数 LOG_DIR があればそこを、なければスクリプト隣の logs/
+    default_dir = os.path.join(os.path.dirname(__file__), 'logs')
+    log_dir = os.getenv('LOG_DIR', default_dir)
     os.makedirs(log_dir, exist_ok=True)
 
-    logger = logging.getLogger('main_batch')
+    # ② ルートロガーを使ってハンドラ重複を防止
+    logger = logging.getLogger()
     logger.setLevel(logging.INFO)
-    fh = logging.FileHandler(os.path.join(log_dir, 'main_batch.log'))
-    fh.setLevel(logging.INFO)
-    fh.setFormatter(logging.Formatter('%(asctime)s [%(levelname)s] %(message)s'))
-    logger.addHandler(fh)
+    if not any(isinstance(h, RotatingFileHandler) for h in logger.handlers):
+        log_path = os.path.join(log_dir, 'main_batch.log')
+        # 10MB×5世代分でローテート
+        rh = RotatingFileHandler(log_path, maxBytes=10*1024*1024, backupCount=5, encoding='utf-8')
+        fmt = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s')
+        rh.setFormatter(fmt)
+        logger.addHandler(rh)
     return logger
 
 def main(auto_confirm=False):
@@ -38,37 +47,51 @@ def main(auto_confirm=False):
 
     print("=== main_batch 開始 ===\n")
 
-    # ─── ステップ1: RSS取得 & DB登録 ────────────────────────
-    print("[ステップ1] 最新ニュースを取得中...")
+    # ─── ステップ1: RSS取得 & 一括INSERT ────────────────────
+    print("[ステップ1] 最新ニュースを取得中…")
     news_list = fetch_latest_news()
-    fetched = len(news_list)
-    print(f"[ステップ1] ニュース取得完了：{fetched} 件取得")
+    total = len(news_list)
+    print(f"[ステップ1] ニュース取得完了：{total} 件取得")
 
-    print("[ステップ1] ニュース登録中...")
+    # ─── ステップ1: 登録前の最新IDを取得 & ログ出力 ────────────────
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM news_articles")
+    before_count = cursor.fetchone()[0]
+    cursor.close()
+    conn.close()
+    logger.info(f"[STEP1 Before] before_article_count={before_count}")
+
+    # ─── ステップ1: 一括登録中… ────────────────────────
+    print("[ステップ1] 一括登録中…")
     step1_start = time.time()
-    inserted = skipped = errors1 = 0
 
-    for idx, news in enumerate(news_list, start=1):
-        # 疑似プログレス表示
-        print(f"\r[ステップ1] {idx}/{fetched} 件目 処理中...", end="", flush=True)
+    # db_helper の bulk_insert_news_articles_full を呼び出し
+    inserted = bulk_insert_news_articles_full(news_list)
 
-        try:
-            ok = insert_news_article(news)
-            if ok:
-                inserted += 1
-                logger.info(f"[ステップ1] 登録成功: URL={news['url']}")
-            else:
-                skipped += 1
-                logger.info(f"[ステップ1] スキップ(重複): URL={news['url']}")
-        except Exception as e:
-            errors1 += 1
-            logger.error(f"[ステップ1] 登録エラー: URL={news.get('url')} エラー={e}")
-
-    # ループ脱出後に改行
-    print()
     step1_duration = time.time() - step1_start
-    print(f"[ステップ1 結果] 登録成功={inserted}件, スキップ={skipped}件, エラー={errors1}件 "
-          f"(所要時間: {step1_duration:.2f}s)\n")
+
+    # ─── ステップ1: 登録後の最新IDを取得 & ログ出力 ────────────────
+    conn = connect_db()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT COUNT(*) FROM news_articles")
+    after_count = cursor.fetchone()[0]
+
+    cursor.close()
+    conn.close()
+    logger.info(f"[STEP1 After] latest_article_count={after_count}")
+
+    inserted = after_count - before_count
+    skipped  = total - inserted
+
+    # 結果表示
+    print(
+        f"[ステップ1 結果] 登録成功={inserted}件, "
+        f"スキップ={skipped}件 "
+        f"(所要時間: {step1_duration:.2f}s)\n"
+    )
+    logger.info(f"[STEP1] 登録成功={inserted}件, スキップ={skipped}件")
 
     # 続行確認（--yes なら自動で y 扱い）
     if auto_confirm:

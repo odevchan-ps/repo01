@@ -59,3 +59,14 @@ jobs:
           cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/repo01-batch:latest
           cache-to:   type=registry,ref=ghcr.io/${{ github.repository_owner }}/repo01-batch:buildcache,mode=max
 
+      # 7) Python LINE Bot (linechat) をマルチアーキビルド & プッシュ
+      - name: Build & push linechat image
+        uses: docker/build-push-action@v4
+        with:
+          context: batch/linechat
+          file: batch/linechat/Dockerfile
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/repo01-linechat:latest
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/repo01-linechat:latest
+          cache-to:   type=registry,ref=ghcr.io/${{ github.repository_owner }}/repo01-linechat:buildcache,mode=max

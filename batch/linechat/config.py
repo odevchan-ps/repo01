@@ -1,0 +1,6 @@
+import os
+
+LINE_SECRET = os.getenv("LINE_CHANNEL_SECRET")
+LINE_TOKEN  = os.getenv("LINE_CHANNEL_ACCESS_TOKEN")
+OPENAI_KEY  = os.getenv("OPENAI_API_KEY")
+TARGET_ID   = os.getenv("TARGET_USER_ID")

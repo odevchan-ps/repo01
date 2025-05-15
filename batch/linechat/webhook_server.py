@@ -1,14 +1,18 @@
+import os
 from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
-import openai
+from openai import OpenAI
 import config
+
+# 環境変数から OpenAI API Key を設定
+os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
+client = OpenAI()
 
 app = Flask(__name__)
 handler = WebhookHandler(config.LINE_SECRET)
 line_api = LineBotApi(config.LINE_TOKEN)
-openai.api_key = config.OPENAI_KEY
 
 @app.route("/callback", methods=["POST"])
 def callback():
@@ -22,16 +26,26 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-        # グループからのメッセージなら groupId を出力
+    # 1:1 チャットなら userId をログに出力
+    if event.source.type == "user":
+        print("=== User ID ===")
+        print(event.source.user_id)
+        print("================")
+
+    # グループチャットなら groupId をログに出力
     if event.source.type == "group":
         print("=== Group ID ===")
         print(event.source.group_id)
         print("================")
-    resp = openai.ChatCompletion.create(
+
+    # GPT 呼び出し（OpenAI Python v1.x インターフェース）
+    resp = client.chat.completions.create(
         model="gpt-4o-mini",
-        messages=[{"role":"user", "content": event.message.text}]
+        messages=[{"role": "user", "content": event.message.text}]
     )
     reply_text = resp.choices[0].message.content
+
+    # LINE へ返信
     line_api.reply_message(
         event.reply_token,
         TextSendMessage(text=reply_text)
